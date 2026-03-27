@@ -46,8 +46,10 @@ app.post('/api/request-pairing', async (req, res) => {
 
     try {
         const code = await state.client.requestPairingCode(sanitised, 'JUSTIN24');
-        state.pairingCodes[sanitised] = { code, timestamp: Date.now() };
-        return res.json({ code });
+        // Store code with 5-minute expiration (300 seconds)
+        state.pairingCodes[sanitised] = { code, timestamp: Date.now(), expiresIn: 300000 };
+        console.log(`[server] Pairing code generated for ${sanitised}: ${code} (expires in 5 minutes)`);
+        return res.json({ code, expiresIn: 300 });
     } catch (err) {
         console.error('[server] requestPairingCode error:', err);
         return res.status(500).json({ error: 'Failed to generate pairing code. Make sure the number is correct and try again.' });
