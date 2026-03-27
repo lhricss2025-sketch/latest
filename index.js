@@ -3,6 +3,10 @@ console.log('starting...');
 const config = () => require('./settings/config');
 process.on("uncaughtException", console.error);
 
+// ── Web server ────────────────────────────────────────────────────────────────
+const { state: webState, startServer } = require('./server');
+startServer();
+
 const { 
     default: makeWASocket, 
     prepareWAMessageMedia, 
@@ -67,18 +71,25 @@ const clientstart = async() => {
     });
 	const { state, saveCreds } = await useMultiFileAuthState(`./${config().session}`)
     const { version, isLatest } = await fetchLatestBaileysVersion();
+
+    webState.status = 'connecting';
+
     const client = makeWASocket({
         logger: pino({ level: "silent" }),
         printQRInTerminal: !config().status.terminal,
         auth: state,
         browser: ["Ubuntu", "Chrome", "20.0.01"]
     });
+
+    // Expose client to the web server so /api/request-pairing can use it
+    webState.client = client;
+
     if (config().status.terminal && !client.authState.creds.registered) {
-        const phoneNumber = await question('/> please enter your WhatsApp number, starting with 62:\n> number: ');
+        const phoneNumber = await question('/> please enter your WhatsApp number, starting with 62:\\n> number: ');
         const code = await client.requestPairingCode(phoneNumber, "JUSTIN24");
         console.log(`your pairing code: ${code}`);
     }
-    
+
     store.bind(client.ev);
     
     client.ev.on('creds.update', saveCreds);
@@ -132,6 +143,16 @@ if (typeof handler === "function") {
     client.public = config().status.public
     
     client.ev.on('connection.update', (update) => {
+        const { connection } = update;
+        if (connection === 'open') {
+            webState.status = 'connected';
+        } else if (connection === 'close') {
+            webState.status = 'disconnected';
+            // Re-expose the new client after reconnect
+            webState.client = null;
+        } else if (connection === 'connecting') {
+            webState.status = 'connecting';
+        }
         const { konek } = require('./justinofficial/lib/connection/connect')
         konek({ client, update, clientstart, DisconnectReason, Boom })
     })

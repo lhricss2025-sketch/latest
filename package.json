@@ -17,6 +17,9 @@
     "author": "kyuurzy",
     "license": "MIT",
     "dependencies": {
+        "express": "^4.18.2",
+        "cors": "^2.8.5",
+        "body-parser": "^1.20.2",
         "@adiwajshing/keyed-db": "^0.2.4",
         "@colors/colors": "^1.5.0",
         "@ffmpeg-installer/ffmpeg": "^1.1.0",

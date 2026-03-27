@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JustinOfficial — WhatsApp Bot Setup</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+    .pulse-dot { animation: pulse-dot 1.5s ease-in-out infinite; }
+
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fade-in 0.35s ease forwards; }
+
+    .code-char {
+      letter-spacing: 0.25em;
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 text-gray-100 flex items-center justify-center p-4">
+
+  <div class="w-full max-w-md space-y-6">
+
+    <!-- Header -->
+    <div class="text-center space-y-1">
+      <div class="flex items-center justify-center gap-2 mb-3">
+        <svg class="w-8 h-8 text-green-400" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+        <h1 class="text-2xl font-bold tracking-tight">JustinOfficial Bot</h1>
+      </div>
+      <p class="text-gray-400 text-sm">Enter your WhatsApp number to pair this bot with your account.</p>
+    </div>
+
+    <!-- Status card -->
+    <div class="bg-gray-800/60 border border-gray-700/50 rounded-2xl p-4 flex items-center gap-3 backdrop-blur-sm">
+      <span id="status-dot" class="w-3 h-3 rounded-full bg-red-500 flex-shrink-0 pulse-dot"></span>
+      <div class="flex-1 min-w-0">
+        <p class="text-xs text-gray-400 uppercase tracking-widest font-medium">Connection Status</p>
+        <p id="status-text" class="text-sm font-semibold text-red-400 mt-0.5">Disconnected</p>
+      </div>
+      <button
+        onclick="checkStatus()"
+        title="Refresh status"
+        class="text-gray-500 hover:text-gray-300 transition-colors p-1 rounded-lg hover:bg-gray-700/50"
+      >
+        <svg id="refresh-icon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Pairing form -->
+    <div id="pairing-section" class="bg-gray-800/60 border border-gray-700/50 rounded-2xl p-6 space-y-5 backdrop-blur-sm">
+      <div>
+        <label for="phone-input" class="block text-sm font-medium text-gray-300 mb-2">
+          WhatsApp Number
+        </label>
+        <div class="flex gap-2">
+          <input
+            id="phone-input"
+            type="tel"
+            placeholder="923001234567"
+            class="flex-1 bg-gray-900/80 border border-gray-600/60 rounded-xl px-4 py-3 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 transition-all"
+          />
+          <button
+            id="pair-btn"
+            onclick="requestPairing()"
+            class="bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-semibold px-5 py-3 rounded-xl text-sm transition-all duration-200 whitespace-nowrap"
+          >
+            Get Code
+          </button>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Include country code, no spaces or dashes (e.g. 923001234567)</p>
+      </div>
+
+      <!-- Error message -->
+      <div id="error-box" class="hidden bg-red-900/30 border border-red-700/50 rounded-xl px-4 py-3 text-sm text-red-300 fade-in"></div>
+
+      <!-- Pairing code display -->
+      <div id="code-section" class="hidden fade-in">
+        <p class="text-xs text-gray-400 uppercase tracking-widest font-medium mb-3">Your Pairing Code</p>
+        <div class="bg-gray-900/80 border border-green-500/30 rounded-xl p-5 text-center">
+          <p id="pairing-code" class="text-4xl font-bold tracking-[0.3em] text-green-400 code-char font-mono">--------</p>
+          <p class="text-xs text-gray-500 mt-3">Code expires in ~60 seconds</p>
+        </div>
+
+        <!-- Instructions -->
+        <div class="mt-4 space-y-2 text-sm text-gray-400">
+          <p class="font-medium text-gray-300">How to enter the code:</p>
+          <ol class="list-decimal list-inside space-y-1.5 text-xs leading-relaxed">
+            <li>Open WhatsApp on your phone</li>
+            <li>Go to <span class="text-gray-200 font-medium">Settings → Linked Devices</span></li>
+            <li>Tap <span class="text-gray-200 font-medium">Link a Device</span></li>
+            <li>Choose <span class="text-gray-200 font-medium">Link with phone number instead</span></li>
+            <li>Enter the 8-digit code shown above</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connected state -->
+    <div id="connected-section" class="hidden fade-in bg-green-900/20 border border-green-700/40 rounded-2xl p-6 text-center space-y-2 backdrop-blur-sm">
+      <div class="flex justify-center mb-3">
+        <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+          <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+      </div>
+      <p class="text-green-400 font-semibold text-lg">Bot Connected!</p>
+      <p class="text-gray-400 text-sm">Your WhatsApp bot is active and ready to use.</p>
+    </div>
+
+    <!-- Footer -->
+    <p class="text-center text-xs text-gray-600">
+      JustinOfficial Bot &mdash; by kyuurzy
+    </p>
+
+  </div>
+
+  <script>
+    const STATUS_POLL_INTERVAL = 5000; // ms
+
+    // ── DOM refs ──────────────────────────────────────────────────────────────
+    const statusDot      = document.getElementById('status-dot');
+    const statusText     = document.getElementById('status-text');
+    const pairBtn        = document.getElementById('pair-btn');
+    const phoneInput     = document.getElementById('phone-input');
+    const errorBox       = document.getElementById('error-box');
+    const codeSection    = document.getElementById('code-section');
+    const pairingCode    = document.getElementById('pairing-code');
+    const pairingSection = document.getElementById('pairing-section');
+    const connectedSection = document.getElementById('connected-section');
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function setStatus(status) {
+      const map = {
+        connected:    { dot: 'bg-green-500',  text: 'Connected',    textColor: 'text-green-400',  pulse: false },
+        connecting:   { dot: 'bg-yellow-400', text: 'Connecting…',  textColor: 'text-yellow-400', pulse: true  },
+        disconnected: { dot: 'bg-red-500',    text: 'Disconnected', textColor: 'text-red-400',    pulse: true  },
+      };
+      const cfg = map[status] || map.disconnected;
+
+      statusDot.className  = `w-3 h-3 rounded-full flex-shrink-0 ${cfg.dot} ${cfg.pulse ? 'pulse-dot' : ''}`;
+      statusText.className = `text-sm font-semibold mt-0.5 ${cfg.textColor}`;
+      statusText.textContent = cfg.text;
+
+      if (status === 'connected') {
+        pairingSection.classList.add('hidden');
+        connectedSection.classList.remove('hidden');
+      } else {
+        pairingSection.classList.remove('hidden');
+        connectedSection.classList.add('hidden');
+      }
+    }
+
+    function showError(msg) {
+      errorBox.textContent = msg;
+      errorBox.classList.remove('hidden');
+    }
+
+    function clearError() {
+      errorBox.textContent = '';
+      errorBox.classList.add('hidden');
+    }
+
+    function setLoading(loading) {
+      pairBtn.disabled = loading;
+      pairBtn.textContent = loading ? 'Requesting…' : 'Get Code';
+    }
+
+    // ── API calls ─────────────────────────────────────────────────────────────
+    async function checkStatus() {
+      const icon = document.getElementById('refresh-icon');
+      icon.classList.add('animate-spin');
+      try {
+        const res  = await fetch('/api/status');
+        const data = await res.json();
+        setStatus(data.status);
+      } catch {
+        setStatus('disconnected');
+      } finally {
+        setTimeout(() => icon.classList.remove('animate-spin'), 600);
+      }
+    }
+
+    async function requestPairing() {
+      clearError();
+      const number = phoneInput.value.trim().replace(/\D/g, '');
+
+      if (!number || number.length < 7) {
+        showError('Please enter a valid phone number including country code.');
+        return;
+      }
+
+      setLoading(true);
+      codeSection.classList.add('hidden');
+
+      try {
+        const res  = await fetch('/api/request-pairing', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ phoneNumber: number }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showError(data.error || 'Something went wrong. Please try again.');
+          return;
+        }
+
+        pairingCode.textContent = data.code;
+        codeSection.classList.remove('hidden');
+
+        // Start polling more aggressively after code is shown
+        startPolling(2000);
+      } catch (err) {
+        showError('Network error — make sure the server is running.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    // ── Polling ───────────────────────────────────────────────────────────────
+    let pollTimer = null;
+
+    function startPolling(interval) {
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = setInterval(async () => {
+        try {
+          const res  = await fetch('/api/pairing-status');
+          const data = await res.json();
+          setStatus(data.status);
+          if (data.paired) {
+            clearInterval(pollTimer);
+          }
+        } catch { /* ignore */ }
+      }, interval);
+    }
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    phoneInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') requestPairing();
+    });
+
+    checkStatus();
+    startPolling(STATUS_POLL_INTERVAL);
+  </script>
+</body>
+</html>
