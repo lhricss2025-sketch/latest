@@ -7,8 +7,8 @@
 const fs = require('fs')
 
 const config = {
-    owner: "6283148534432", //GANTI NOMER KALIAN AGAR BISA AKSES BOT
-    botNumber: "6283148534432", //GANTI NOMER KALIAN AGAR BISA AKSES BOT
+    owner: "923344414986", //GANTI NOMER KALIAN AGAR BISA AKSES BOT
+    botNumber: "923344414986", //GANTI NOMER KALIAN AGAR BISA AKSES BOT
     setPair: "JUSTIN24",
     thumbUrl: "https://files.catbox.moe/q00p88.jpg",
     session: "sessions",
