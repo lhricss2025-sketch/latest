@@ -14,7 +14,7 @@ const config = {
     session: "sessions",
     status: {
         public: true, //UBAH KE false JIKA INGIN BOT KALIAN KE MODE self
-        terminal: true, //JANGAN DI UBAH, JIKA UBAH KE false MAKA AKAN MENGGUNAKAN QR CODE
+        terminal: false, //JANGAN DI UBAH, JIKA UBAH KE false MAKA AKAN MENGGUNAKAN QR CODE
         reactsw: false, //BEBAS UBAH KE true, AGAR AUTO REACT SW
     },
     message: {
