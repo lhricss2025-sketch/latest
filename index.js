@@ -140,22 +140,28 @@ if (typeof handler === "function") {
         }
     });
 
-    client.public = config().status.public
-    
     client.ev.on('connection.update', (update) => {
-        const { connection } = update;
-        if (connection === 'open') {
-            webState.status = 'connected';
-        } else if (connection === 'close') {
-            webState.status = 'disconnected';
-            // Re-expose the new client after reconnect
-            webState.client = null;
-        } else if (connection === 'connecting') {
-            webState.status = 'connecting';
+    const { connection, lastDisconnect } = update;
+    
+    if (connection === 'open') {
+        webState.status = 'connected';
+        console.log('[bot] ✅ Connected to WhatsApp');
+    } else if (connection === 'close') {
+        webState.status = 'disconnected';
+        webState.client = null;
+        
+        // Check if disconnection is due to logout
+        if (lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut) {
+            console.log('[bot] ⚠️ Connection closed, reconnecting...');
+            clientstart();
+        } else {
+            console.log('[bot] ❌ Logged out');
         }
-        const { konek } = require('./justinofficial/lib/connection/connect')
-        konek({ client, update, clientstart, DisconnectReason, Boom })
-    })
+    } else if (connection === 'connecting') {
+        webState.status = 'connecting';
+        console.log('[bot] 🔄 Connecting...');
+    }
+})
     
     client.deleteMessage = async (chatId, key) => {
         try {
